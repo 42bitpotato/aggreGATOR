@@ -28,15 +28,29 @@ type Config struct {
 	CurrentUserName string `json:"current_user_name"`
 }
 
-func ReadConfigJson() (Config, error) {
+func Read() (Config, error) {
 	jsonFile, err := getConfigFilePath()
 	if err != nil {
 		return Config{}, err
 	}
 	var config Config
-	decoder = json.NewDecoder(jsonFile)
+	decoder := json.NewDecoder(jsonFile)
 	if err := decoder.Decode(&config); err != nil {
 		return nil, fmt.Errorf("unable to decode config json: %v", err)
 	}
 	return config, nil
+}
+
+func SetUser(cfg *Config, username string) error {
+	cfg.CurrentUserName = username
+	filePath, err := getConfigFilePath()
+	if err != nil {
+		return err
+	}
+
+	err = json.NewEncoder(filePath).Encode(cfg)
+	if err != nil {
+		return fmt.Errorf("failed to set username in config json: %v", err)
+	}
+	return nil
 }
