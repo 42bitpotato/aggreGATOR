@@ -29,16 +29,22 @@ type Config struct {
 }
 
 func Read() (Config, error) {
-	jsonFile, err := getConfigFilePath()
+	jsonFilePath, err := getConfigFilePath()
 	if err != nil {
 		return Config{}, err
 	}
-	var config Config
+
+	jsonFile, err := os.Open(jsonFilePath)
+	if err != nil {
+		return Config{}, err
+	}
+
+	var cfg Config
 	decoder := json.NewDecoder(jsonFile)
-	if err := decoder.Decode(&config); err != nil {
+	if err := decoder.Decode(&cfg); err != nil {
 		return nil, fmt.Errorf("unable to decode config json: %v", err)
 	}
-	return config, nil
+	return cfg, nil
 }
 
 func SetUser(cfg *Config, username string) error {
