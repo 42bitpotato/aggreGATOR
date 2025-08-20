@@ -23,6 +23,6 @@ func handlerLogin(s *state, cmd command) error {
 	if err != nil {
 		return fmt.Errorf("failed to set user: %v", err)
 	}
-	fmt.Printf("Username set to %s\n", username)
+	fmt.Printf("User set to %s\n", username)
 	return nil
 }
