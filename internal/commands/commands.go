@@ -11,14 +11,15 @@ type state struct {
 }
 
 type command struct {
-	login []string
+	name string
+	args []string
 }
 
 func handlerLogin(s *state, cmd command) error {
-	if len(cmd.login) == 0 {
+	if len(cmd.args) == 0 {
 		return fmt.Errorf("missing argument, the login handler expects a single argument, the username")
 	}
-	username := cmd.login[0]
+	username := cmd.args[0]
 	err := config.SetUser(s.cfg, username)
 	if err != nil {
 		return fmt.Errorf("failed to set user: %v", err)
