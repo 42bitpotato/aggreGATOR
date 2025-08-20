@@ -8,10 +8,6 @@ import (
 	"github.com/42bitpotato/aggreGATOR/internal/config"
 )
 
-type State struct {
-	cfg *config.Config
-}
-
 func main() {
 	var cfg config.Config
 	cfg, err := config.Read()
