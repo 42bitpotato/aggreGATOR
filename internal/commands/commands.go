@@ -15,6 +15,18 @@ type command struct {
 	args []string
 }
 
+type Commands struct {
+	commands map[string]func(*state, command) error
+}
+
+func (c *commands) run(s *state, cmd command) error {
+	return nil
+}
+
+func (c *commands) register(name string, f func(*state, command) error) {
+	return
+}
+
 func handlerLogin(s *state, cmd command) error {
 	if len(cmd.args) == 0 {
 		return fmt.Errorf("missing argument, the login handler expects a single argument, the username")
