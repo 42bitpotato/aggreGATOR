@@ -9,12 +9,14 @@ import (
 )
 
 func main() {
-	var cfg config.Config
+	var state config.State
 	cfg, err := config.Read()
 	if err != nil {
 		fmt.Println("error reading config:", err)
 		os.Exit(1)
 	}
+	state.Cfg = &cfg
+
 	err = config.SetUser(&cfg, "Macke")
 	if err != nil {
 		fmt.Println("error setting user:", err)

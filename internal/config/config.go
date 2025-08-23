@@ -7,6 +7,10 @@ import (
 	"path/filepath"
 )
 
+type State struct {
+	Cfg *Config
+}
+
 const configFileName = ".gatorconfig.json"
 
 func getConfigFilePath() (string, error) {

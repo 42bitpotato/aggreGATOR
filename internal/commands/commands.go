@@ -6,36 +6,23 @@ import (
 	"github.com/42bitpotato/aggreGATOR/internal/config"
 )
 
-type state struct {
-	cfg *config.Config
-}
-
-type command struct {
-	name string
-	args []string
+type Command struct {
+	Name string
+	Args []string
 }
 
 type Commands struct {
-	commands map[string]func(*state, command) error
+	registeredCommands map[string]func(*config.State, Command) error
 }
 
-func (c *commands) run(s *state, cmd command) error {
-	return nil
-}
-
-func (c *commands) register(name string, f func(*state, command) error) {
-	return
-}
-
-func handlerLogin(s *state, cmd command) error {
-	if len(cmd.args) == 0 {
-		return fmt.Errorf("missing argument, the login handler expects a single argument, the username")
+func (c *Commands) run(s *config.State, cmd Command) error {
+	f, ok := c.registeredCommands[cmd.Name]
+	if !ok {
+		return fmt.Errorf("command not supported: %s", cmd.Name)
 	}
-	username := cmd.args[0]
-	err := config.SetUser(s.cfg, username)
-	if err != nil {
-		return fmt.Errorf("failed to set user: %v", err)
-	}
-	fmt.Printf("User set to %s\n", username)
-	return nil
+	return f(s, cmd)
+}
+
+func (c *Commands) register(name string, f func(*config.State, Command) error) {
+	c.registeredCommands[name] = f
 }
