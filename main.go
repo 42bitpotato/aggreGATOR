@@ -1,10 +1,10 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 
+	"github.com/42bitpotato/aggreGATOR/internal/commands"
 	"github.com/42bitpotato/aggreGATOR/internal/config"
 )
 
@@ -17,12 +17,9 @@ func main() {
 	}
 	state.Cfg = &cfg
 
-	err = config.SetUser(&cfg, "Macke")
-	if err != nil {
-		fmt.Println("error setting user:", err)
-		os.Exit(1)
+	cmds := commands.Commands{
+		RegisteredCommands: make(map[string]func(*config.State, commands.Command) error),
 	}
-	cfg2, _ := config.Read()
-	cfgJson, _ := json.Marshal(cfg2)
-	fmt.Println(string(cfgJson))
+	cmds.Register("login", commands.HandlerLogin)
+
 }

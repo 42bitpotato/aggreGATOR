@@ -6,7 +6,7 @@ import (
 	"github.com/42bitpotato/aggreGATOR/internal/config"
 )
 
-func handlerLogin(s *config.State, cmd Command) error {
+func HandlerLogin(s *config.State, cmd Command) error {
 	if len(cmd.Args) == 0 {
 		return fmt.Errorf("missing argument, the login handler expects a single argument, the username")
 	}
