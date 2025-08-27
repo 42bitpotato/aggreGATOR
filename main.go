@@ -8,8 +8,15 @@ import (
 	"github.com/42bitpotato/aggreGATOR/internal/config"
 )
 
-func encodeJson(conf config.Config) (string, error) {
-	return "", nil
+func getInput() (commands.Command, error) {
+	if len(os.Args[:]) < 3 {
+		return commands.Command{}, fmt.Errorf("atleast 2 arguments needed")
+	}
+	inputCmd := commands.Command{
+		Name: os.Args[1],
+		Args: os.Args[2:],
+	}
+	return inputCmd, nil
 }
 
 func main() {
@@ -26,10 +33,12 @@ func main() {
 	}
 	cmds.Register("login", commands.HandlerLogin)
 
-	inputCmd := commands.Command{
-		Name: os.Args[1],
-		Args: os.Args[2:],
+	inputCmd, err := getInput()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
 	}
+
 	cmds.Run(&state, inputCmd)
 
 	fmt.Print(cfg)
