@@ -8,6 +8,7 @@ import (
 	"github.com/42bitpotato/aggreGATOR/internal/config"
 )
 
+// Get input
 func getInput() (commands.Command, error) {
 	if len(os.Args[:]) < 3 {
 		return commands.Command{}, fmt.Errorf("atleast 2 arguments needed")
