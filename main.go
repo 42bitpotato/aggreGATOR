@@ -49,14 +49,21 @@ func main() {
 		RegisteredCommands: make(map[string]func(*config.State, commands.Command) error),
 	}
 	cmds.Register("login", commands.HandlerLogin)
+	cmds.Register("register", commands.HandlerRegister)
 
+	// Get input
 	inputCmd, err := getInput()
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 
-	cmds.Run(&state, inputCmd)
+	// Run command
+	err = cmds.Run(&state, inputCmd)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 
 	fmt.Print(cfg)
 }
