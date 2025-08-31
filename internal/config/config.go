@@ -5,9 +5,17 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"github.com/42bitpotato/aggreGATOR/internal/database"
 )
 
+type Config struct {
+	DbUrl           string `json:"db_url"`
+	CurrentUserName string `json:"current_user_name"`
+}
+
 type State struct {
+	Db  *database.Queries
 	Cfg *Config
 }
 
@@ -43,11 +51,6 @@ func write(cfg *Config) error {
 		return fmt.Errorf("failed to write config to json: %v", err)
 	}
 	return nil
-}
-
-type Config struct {
-	DbUrl           string `json:"db_url"`
-	CurrentUserName string `json:"current_user_name"`
 }
 
 func Read() (Config, error) {

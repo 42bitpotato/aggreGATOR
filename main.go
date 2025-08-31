@@ -1,11 +1,14 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"os"
 
 	"github.com/42bitpotato/aggreGATOR/internal/commands"
 	"github.com/42bitpotato/aggreGATOR/internal/config"
+	"github.com/42bitpotato/aggreGATOR/internal/database"
+	_ "github.com/lib/pq"
 )
 
 // Get input
@@ -21,6 +24,7 @@ func getInput() (commands.Command, error) {
 }
 
 func main() {
+	// Load the config file
 	var state config.State
 	cfg, err := config.Read()
 	if err != nil {
@@ -29,6 +33,18 @@ func main() {
 	}
 	state.Cfg = &cfg
 
+	// Open a connection to the database, and store it in the state struct
+	db, err := sql.Open("postgres", state.Cfg.DbUrl)
+	if err != nil {
+		fmt.Printf("error connectiong to sql database: %v\n", err)
+		os.Exit(1)
+	}
+	defer db.Close()
+
+	dbQueries := database.New(db)
+	state.Db = dbQueries
+
+	// Generate commands
 	cmds := commands.Commands{
 		RegisteredCommands: make(map[string]func(*config.State, commands.Command) error),
 	}
