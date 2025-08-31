@@ -50,7 +50,7 @@ func HandlerRegister(s *config.State, cmd Command) error {
 	}
 	err = HandlerLogin(s, cmd)
 	if err != nil {
-		return fmt.Errorf("Unable to set username in config: %v", err)
+		return fmt.Errorf("unable to set username in config: %v", err)
 	}
 	fmt.Printf("User '%s' successfully created.\n%v\n", uName, usr)
 	return nil
