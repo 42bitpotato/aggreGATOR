@@ -48,10 +48,12 @@ func HandlerRegister(s *config.State, cmd Command) error {
 	if err != nil {
 		return fmt.Errorf("failed to create new user in database: %v", err)
 	}
+	fmt.Printf("User '%s' successfully created.\n%v\n", uName, usr)
+
+	// Login created user
 	err = HandlerLogin(s, cmd)
 	if err != nil {
 		return fmt.Errorf("unable to set username in config: %v", err)
 	}
-	fmt.Printf("User '%s' successfully created.\n%v\n", uName, usr)
 	return nil
 }
