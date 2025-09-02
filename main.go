@@ -13,8 +13,8 @@ import (
 
 // Get input
 func getInput() (commands.Command, error) {
-	if len(os.Args[:]) < 3 {
-		return commands.Command{}, fmt.Errorf("atleast 2 arguments needed")
+	if len(os.Args[:]) < 2 {
+		return commands.Command{}, fmt.Errorf("atleast 1 command needed")
 	}
 	inputCmd := commands.Command{
 		Name: os.Args[1],
@@ -50,6 +50,7 @@ func main() {
 	}
 	cmds.Register("login", commands.HandlerLogin)
 	cmds.Register("register", commands.HandlerRegister)
+	cmds.Register("reset", commands.HandlerReset)
 
 	// Get input
 	inputCmd, err := getInput()
@@ -64,6 +65,4 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-
-	fmt.Print(cfg)
 }
