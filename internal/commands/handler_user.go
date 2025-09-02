@@ -63,6 +63,6 @@ func HandlerReset(s *config.State, cmd Command) error {
 	if err != nil {
 		return fmt.Errorf("failed to reset users: %v", err)
 	}
-	fmt.Println("Successfully reseted users table!")
+	fmt.Println("users table reset.")
 	return nil
 }
