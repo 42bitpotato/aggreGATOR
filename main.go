@@ -51,6 +51,7 @@ func main() {
 	cmds.Register("login", commands.HandlerLogin)
 	cmds.Register("register", commands.HandlerRegister)
 	cmds.Register("reset", commands.HandlerReset)
+	cmds.Register("users", commands.HandlerGetUsers)
 
 	// Get input
 	inputCmd, err := getInput()
