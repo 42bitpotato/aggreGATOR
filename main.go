@@ -11,6 +11,26 @@ import (
 	_ "github.com/lib/pq"
 )
 
+var cmdsList = map[string]func(*config.State, commands.Command) error{
+	"login":    commands.HandlerLogin,
+	"register": commands.HandlerRegister,
+	"reset":    commands.HandlerReset,
+	"users":    commands.HandlerGetUsers,
+	"agg":      commands.Agg,
+}
+
+func genCmds() (cmds commands.Commands) {
+	cmds = commands.Commands{
+		RegisteredCommands: make(map[string]func(*config.State, commands.Command) error),
+	}
+
+	for name, f := range cmdsList {
+		cmds.Register(name, f)
+	}
+
+	return cmds
+}
+
 // Get input
 func getInput() (commands.Command, error) {
 	if len(os.Args[:]) < 2 {
@@ -45,13 +65,7 @@ func main() {
 	state.Db = dbQueries
 
 	// Generate commands
-	cmds := commands.Commands{
-		RegisteredCommands: make(map[string]func(*config.State, commands.Command) error),
-	}
-	cmds.Register("login", commands.HandlerLogin)
-	cmds.Register("register", commands.HandlerRegister)
-	cmds.Register("reset", commands.HandlerReset)
-	cmds.Register("users", commands.HandlerGetUsers)
+	cmds := genCmds()
 
 	// Get input
 	inputCmd, err := getInput()
