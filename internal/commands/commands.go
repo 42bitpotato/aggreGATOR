@@ -35,7 +35,7 @@ func Agg(s *config.State, cmd Command) error {
 	rssCli := rss.NewClient()
 	feed, err := rssCli.FetchFeed(context.Background(), link)
 	if err != nil {
-		return fmt.Errorf("Error fetching RSS feed: %v", err)
+		return fmt.Errorf("error fetching RSS feed: %v", err)
 	}
 	fmt.Print(feed)
 	return nil
