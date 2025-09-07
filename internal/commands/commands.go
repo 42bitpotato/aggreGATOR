@@ -1,9 +1,11 @@
 package commands
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/42bitpotato/aggreGATOR/internal/config"
+	"github.com/42bitpotato/aggreGATOR/internal/rss"
 )
 
 type Command struct {
@@ -25,4 +27,16 @@ func (c *Commands) Run(s *config.State, cmd Command) error {
 
 func (c *Commands) Register(name string, f func(*config.State, Command) error) {
 	c.RegisteredCommands[name] = f
+}
+
+// Aggregator command, will be automated later on
+func agg(s *config.State, cmd Command) error {
+	link := "https://www.wagslane.dev/index.xml"
+	rssCli := rss.NewClient()
+	feed, err := rssCli.FetchFeed(context.Background(), link)
+	if err != nil {
+		return fmt.Errorf("Error fetching RSS feed: %v", err)
+	}
+	fmt.Print(feed)
+	return nil
 }
