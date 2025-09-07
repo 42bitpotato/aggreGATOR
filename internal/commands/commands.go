@@ -30,7 +30,7 @@ func (c *Commands) Register(name string, f func(*config.State, Command) error) {
 }
 
 // Aggregator command, will be automated later on
-func agg(s *config.State, cmd Command) error {
+func Agg(s *config.State, cmd Command) error {
 	link := "https://www.wagslane.dev/index.xml"
 	rssCli := rss.NewClient()
 	feed, err := rssCli.FetchFeed(context.Background(), link)
