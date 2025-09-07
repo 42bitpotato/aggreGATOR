@@ -1,6 +1,11 @@
 package rss
 
-import "context"
+import (
+	"context"
+	"encoding/xml"
+	"io"
+	"net/http"
+)
 
 type RSSFeed struct {
 	Channel struct {
@@ -18,6 +23,33 @@ type RSSItem struct {
 	PubDate     string `xml:"pubDate"`
 }
 
-func fetchFeed(ctx context.Context, feedURL string) (*RSSFeed, error) {
+func (c *Client) FetchFeed(ctx context.Context, feedURL string) (*RSSFeed, error) {
+	req, err := http.NewRequestWithContext(ctx, "GET", feedURL, nil)
+	if err != nil {
+		return &RSSFeed{}, err
+	}
+	// Set header
+	req.Header.Set("User-Agent", "gator")
+
+	// Get respons
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return &RSSFeed{}, err
+	}
+	defer resp.Body.Close()
+
+	// Read response (return byte)
+	dat, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return &RSSFeed{}, err
+	}
+
+	// Decode/Unmarshall response
+	rssResp := &RSSFeed{}
+	err = xml.Unmarshal(dat, rssResp)
+	if err != nil {
+		return &RSSFeed{}, err
+	}
+
 	return &RSSFeed{}, nil
 }
