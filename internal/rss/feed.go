@@ -3,6 +3,7 @@ package rss
 import (
 	"context"
 	"encoding/xml"
+	"html"
 	"io"
 	"net/http"
 )
@@ -51,5 +52,20 @@ func (c *Client) FetchFeed(ctx context.Context, feedURL string) (*RSSFeed, error
 		return &RSSFeed{}, err
 	}
 
+	// Unescape respons
+	rssResp.unescapeHTML()
+
 	return &RSSFeed{}, nil
+}
+
+func (feed *RSSFeed) unescapeHTML() {
+	feed.Channel.Description = html.UnescapeString(feed.Channel.Description)
+	feed.Channel.Title = html.UnescapeString(feed.Channel.Title)
+	if len(feed.Channel.Item) == 0 {
+		return
+	}
+	for _, item := range feed.Channel.Item {
+		item.Description = html.UnescapeString(item.Description)
+		item.Title = html.UnescapeString(item.Title)
+	}
 }
