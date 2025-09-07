@@ -47,25 +47,29 @@ func (c *Client) FetchFeed(ctx context.Context, feedURL string) (*RSSFeed, error
 
 	// Decode/Unmarshall response
 	rssResp := &RSSFeed{}
-	err = xml.Unmarshal(dat, rssResp)
+	err = xml.Unmarshal(dat, &rssResp)
 	if err != nil {
 		return &RSSFeed{}, err
 	}
 
 	// Unescape respons
-	rssResp.unescapeHTML()
+	err = unescapeHTML(rssResp)
+	if err != nil {
+		return &RSSFeed{}, err
+	}
 
-	return &RSSFeed{}, nil
+	return rssResp, nil
 }
 
-func (feed *RSSFeed) unescapeHTML() {
+func unescapeHTML(feed *RSSFeed) error {
 	feed.Channel.Description = html.UnescapeString(feed.Channel.Description)
 	feed.Channel.Title = html.UnescapeString(feed.Channel.Title)
 	if len(feed.Channel.Item) == 0 {
-		return
+		return nil
 	}
-	for _, item := range feed.Channel.Item {
-		item.Description = html.UnescapeString(item.Description)
-		item.Title = html.UnescapeString(item.Title)
+	for i, item := range feed.Channel.Item {
+		feed.Channel.Item[i].Description = html.UnescapeString(item.Description)
+		feed.Channel.Item[i].Title = html.UnescapeString(item.Title)
 	}
+	return nil
 }
