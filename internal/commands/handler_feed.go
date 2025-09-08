@@ -1,0 +1,47 @@
+package commands
+
+import (
+	"context"
+	"fmt"
+	"time"
+
+	"github.com/42bitpotato/aggreGATOR/internal/config"
+	"github.com/42bitpotato/aggreGATOR/internal/database"
+	"github.com/google/uuid"
+)
+
+func HandlerAddFeed(s *config.State, cmd Command) error {
+	args := cmd.Args
+	if len(args) < 2 {
+		return fmt.Errorf("2 arguments needed, name of feed and url: %v", args)
+	}
+
+	userId, err := getUserId(s)
+	if err != nil {
+		return err
+	}
+
+	feed := database.AddFeedParams{
+		ID:        uuid.New(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		Name:      cmd.Args[0],
+		Url:       cmd.Args[1],
+		UserID:    userId,
+	}
+
+	err = s.Db.AddFeed(context.Background(), feed)
+	if err != nil {
+		return fmt.Errorf("error adding feed to database: %v", err)
+	}
+	return nil
+}
+
+func getUserId(s *config.State) (uuid.UUID, error) {
+	userName := s.Cfg.CurrentUserName
+	userDb, err := s.Db.GetUser(context.Background(), userName)
+	if err != nil {
+		return uuid.UUID{}, err
+	}
+	return userDb.ID, nil
+}
