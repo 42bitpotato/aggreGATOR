@@ -8,3 +8,10 @@ VALUES (
     $5,
     $6
 );
+
+-- name: GetFeed :one
+SELECT * FROM feeds
+WHERE name $1;
+
+-- name: ResetFeeds :exec
+DELETE FROM feeds;
