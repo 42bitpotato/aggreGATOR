@@ -44,3 +44,31 @@ func (q *Queries) AddFeed(ctx context.Context, arg AddFeedParams) error {
 	)
 	return err
 }
+
+const getFeed = `-- name: GetFeed :one
+SELECT id, created_at, updated_at, name, url, user_id FROM feeds
+WHERE name = $1
+`
+
+func (q *Queries) GetFeed(ctx context.Context, name string) (Feed, error) {
+	row := q.db.QueryRowContext(ctx, getFeed, name)
+	var i Feed
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Name,
+		&i.Url,
+		&i.UserID,
+	)
+	return i, err
+}
+
+const resetFeeds = `-- name: ResetFeeds :exec
+DELETE FROM feeds
+`
+
+func (q *Queries) ResetFeeds(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, resetFeeds)
+	return err
+}
