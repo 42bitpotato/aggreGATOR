@@ -34,6 +34,13 @@ func HandlerAddFeed(s *config.State, cmd Command) error {
 	if err != nil {
 		return fmt.Errorf("error adding feed to database: %v", err)
 	}
+
+	dbFeed, err := s.Db.GetFeed(context.Background(), cmd.Args[0])
+	if err != nil {
+		return fmt.Errorf("failed to fetch feed from db: %v", err)
+	}
+	fmt.Print(dbFeed)
+
 	return nil
 }
 
@@ -44,4 +51,13 @@ func getUserId(s *config.State) (uuid.UUID, error) {
 		return uuid.UUID{}, err
 	}
 	return userDb.ID, nil
+}
+
+func HandlerResetFeeds(s *config.State, cmd Command) error {
+	err := s.Db.ResetFeeds(context.Background())
+	if err != nil {
+		return fmt.Errorf("failed to reset feeds: %v", err)
+	}
+	fmt.Println("feeds table reset.")
+	return nil
 }
