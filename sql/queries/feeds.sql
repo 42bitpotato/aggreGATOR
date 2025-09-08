@@ -11,7 +11,7 @@ VALUES (
 
 -- name: GetFeed :one
 SELECT * FROM feeds
-WHERE name $1;
+WHERE name = $1;
 
 -- name: ResetFeeds :exec
 DELETE FROM feeds;
