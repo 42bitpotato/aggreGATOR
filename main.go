@@ -12,11 +12,13 @@ import (
 )
 
 var cmdsList = map[string]func(*config.State, commands.Command) error{
-	"login":    commands.HandlerLogin,
-	"register": commands.HandlerRegister,
-	"reset":    commands.HandlerReset,
-	"users":    commands.HandlerGetUsers,
-	"agg":      commands.Agg,
+	"login":     commands.HandlerLogin,
+	"register":  commands.HandlerRegister,
+	"reset":     commands.HandlerReset,
+	"users":     commands.HandlerGetUsers,
+	"agg":       commands.Agg,
+	"addfeed":   commands.HandlerAddFeed,
+	"resetfeed": commands.HandlerResetFeeds,
 }
 
 func genCmds() (cmds commands.Commands) {
