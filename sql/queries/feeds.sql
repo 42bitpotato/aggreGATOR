@@ -15,3 +15,6 @@ WHERE name = $1;
 
 -- name: ResetFeeds :exec
 DELETE FROM feeds;
+
+-- name: GetFeeds :many
+SELECT name, url, user_id FROM feeds;
