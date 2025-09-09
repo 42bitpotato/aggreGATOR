@@ -61,3 +61,24 @@ func HandlerResetFeeds(s *config.State, cmd Command) error {
 	fmt.Println("feeds table reset.")
 	return nil
 }
+
+func HandlerGetFeeds(s *config.State, cmd Command) error {
+	feeds, err := s.Db.GetFeeds(context.Background())
+	if err != nil {
+		return fmt.Errorf("failed to retrieve feeds from database: %v", err)
+	}
+
+	for _, item := range feeds {
+		usrName, err := s.Db.GetUserByID(context.Background(), item.UserID)
+		if err != nil {
+			return fmt.Errorf("failed to retrieve username from database: %v", err)
+		}
+		printFeed := fmt.Sprintf("--- %s ---\nURL: %s\nCreated by: %s", item.Name, item.Url, usrName)
+
+		if usrName == s.Cfg.CurrentUserName {
+			printFeed += " (current)"
+		}
+		fmt.Printf("%s\n\n", printFeed)
+	}
+	return nil
+}
