@@ -17,4 +17,4 @@ WHERE name = $1;
 DELETE FROM feeds;
 
 -- name: GetFeeds :many
-SELECT name, url, user_id FROM feeds;
+SELECT name, url, user_id, created_at, updated_at FROM feeds;

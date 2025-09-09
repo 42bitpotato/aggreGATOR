@@ -65,13 +65,15 @@ func (q *Queries) GetFeed(ctx context.Context, name string) (Feed, error) {
 }
 
 const getFeeds = `-- name: GetFeeds :many
-SELECT name, url, user_id FROM feeds
+SELECT name, url, user_id, created_at, updated_at FROM feeds
 `
 
 type GetFeedsRow struct {
-	Name   string
-	Url    string
-	UserID uuid.UUID
+	Name      string
+	Url       string
+	UserID    uuid.UUID
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 func (q *Queries) GetFeeds(ctx context.Context) ([]GetFeedsRow, error) {
@@ -83,7 +85,13 @@ func (q *Queries) GetFeeds(ctx context.Context) ([]GetFeedsRow, error) {
 	var items []GetFeedsRow
 	for rows.Next() {
 		var i GetFeedsRow
-		if err := rows.Scan(&i.Name, &i.Url, &i.UserID); err != nil {
+		if err := rows.Scan(
+			&i.Name,
+			&i.Url,
+			&i.UserID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

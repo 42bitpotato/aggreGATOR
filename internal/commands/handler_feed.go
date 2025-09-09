@@ -78,7 +78,7 @@ func HandlerGetFeeds(s *config.State, cmd Command) error {
 		if usrName == s.Cfg.CurrentUserName {
 			printFeed += " (current)"
 		}
-		fmt.Printf("%s\n\n", printFeed)
+		fmt.Printf("%s\nCreated: %s - Updated: %s\n\n", printFeed, item.CreatedAt.String(), item.UpdatedAt.String())
 	}
 	return nil
 }
