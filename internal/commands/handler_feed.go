@@ -44,15 +44,6 @@ func HandlerAddFeed(s *config.State, cmd Command) error {
 	return nil
 }
 
-func getUserId(s *config.State) (uuid.UUID, error) {
-	userName := s.Cfg.CurrentUserName
-	userDb, err := s.Db.GetUser(context.Background(), userName)
-	if err != nil {
-		return uuid.UUID{}, err
-	}
-	return userDb.ID, nil
-}
-
 func HandlerResetFeeds(s *config.State, cmd Command) error {
 	err := s.Db.ResetFeeds(context.Background())
 	if err != nil {
@@ -83,5 +74,39 @@ func HandlerGetFeeds(s *config.State, cmd Command) error {
 			item.CreatedAt.Format("2006-01-02 15:04:05"),
 			item.UpdatedAt.Format("2006-01-02 15:04:05"))
 	}
+	return nil
+}
+
+func HandlerFollowFeed(s *config.State, cmd Command) error {
+	if len(cmd.Args) != 1 {
+		return fmt.Errorf("only 1 arguments needed, url: %v", cmd.Args)
+	}
+	url := cmd.Args[0]
+
+	// Get feed row
+	feed, err := s.Db.GetFeedByUrl(context.Background(), url)
+	if err != nil {
+		return fmt.Errorf("failed to fetch feed through url: %v", err)
+	}
+
+	userID, err := getUserId(s)
+	if err != nil {
+		return fmt.Errorf("failed to fetch user ID: %v", err)
+	}
+
+	newFollowArgs := database.CreateFeedFollowParams{
+		ID:        uuid.New(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		UserID:    userID,
+		FeedID:    feed.ID,
+	}
+
+	newFeedFollow, err := s.Db.CreateFeedFollow(context.Background(), newFollowArgs)
+	if err != nil {
+		return fmt.Errorf("error querrying sql database: %v", err)
+	}
+
+	fmt.Printf("'%s' followed by %s", newFeedFollow.FeedName, newFeedFollow.UserName)
 	return nil
 }
