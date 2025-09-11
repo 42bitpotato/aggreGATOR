@@ -110,3 +110,30 @@ func HandlerFollowFeed(s *config.State, cmd Command) error {
 	fmt.Printf("'%s' followed by %s", newFeedFollow.FeedName, newFeedFollow.UserName)
 	return nil
 }
+
+func HandlerUserFollowing(s *config.State, cmd Command) error {
+	feedFollows, err := s.Db.GetFeedFollowsForUser(context.Background(), s.Cfg.CurrentUserName)
+	if err != nil {
+		return fmt.Errorf("error fetching user feeds: %v", err)
+	}
+
+	// Check number of feeds and adjust print accordingly
+	numFeeds := len(feedFollows)
+	printUsrF := fmt.Sprintf("User %s is following %v feed", s.Cfg.CurrentUserName, numFeeds)
+	if numFeeds == 0 {
+		fmt.Printf("%ss.\n", printUsrF)
+		return nil
+	}
+	if numFeeds == 1 {
+		fmt.Printf("%s:\n", printUsrF)
+	} else if numFeeds > 1 {
+		fmt.Printf("%ss:\n", printUsrF)
+	}
+
+	// Print followed feeds
+	for _, feed := range feedFollows {
+		fmt.Printf("- %s\n", feed.FeedName)
+	}
+
+	return nil
+}
