@@ -82,3 +82,12 @@ func HandlerGetUsers(s *config.State, cmd Command) error {
 	}
 	return nil
 }
+
+func getUserId(s *config.State) (uuid.UUID, error) {
+	userName := s.Cfg.CurrentUserName
+	userDb, err := s.Db.GetUser(context.Background(), userName)
+	if err != nil {
+		return uuid.UUID{}, err
+	}
+	return userDb.ID, nil
+}
