@@ -47,10 +47,13 @@ func (q *Queries) AddFeed(ctx context.Context, arg AddFeedParams) error {
 
 const createFeedFollow = `-- name: CreateFeedFollow :one
 WITH inserted_feed_follow AS (
-    INSERT INTO feed_follows (user_id, feed_id)
+    INSERT INTO feed_follows (id, created_at, updated_at, user_id, feed_id)
     VALUES (
         $1,
-        $2
+        $2,
+        $3,
+        $4,
+        $5
     )
     RETURNING id, created_at, updated_at, user_id, feed_id
 )
@@ -68,8 +71,11 @@ INNER JOIN feeds ON inserted_feed_follow.feed_id = feeds.id
 `
 
 type CreateFeedFollowParams struct {
-	UserID uuid.UUID
-	FeedID uuid.UUID
+	ID        uuid.UUID
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	UserID    uuid.UUID
+	FeedID    uuid.UUID
 }
 
 type CreateFeedFollowRow struct {
@@ -83,7 +89,13 @@ type CreateFeedFollowRow struct {
 }
 
 func (q *Queries) CreateFeedFollow(ctx context.Context, arg CreateFeedFollowParams) (CreateFeedFollowRow, error) {
-	row := q.db.QueryRowContext(ctx, createFeedFollow, arg.UserID, arg.FeedID)
+	row := q.db.QueryRowContext(ctx, createFeedFollow,
+		arg.ID,
+		arg.CreatedAt,
+		arg.UpdatedAt,
+		arg.UserID,
+		arg.FeedID,
+	)
 	var i CreateFeedFollowRow
 	err := row.Scan(
 		&i.ID,
