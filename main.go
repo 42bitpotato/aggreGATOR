@@ -21,6 +21,7 @@ var cmdsList = map[string]func(*config.State, commands.Command) error{
 	"resetfeed": commands.HandlerResetFeeds,
 	"feeds":     commands.HandlerGetFeeds,
 	"follow":    commands.HandlerFollowFeed,
+	"following": commands.HandlerUserFollowing,
 }
 
 func genCmds() (cmds commands.Commands) {
