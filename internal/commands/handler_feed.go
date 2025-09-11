@@ -35,11 +35,28 @@ func HandlerAddFeed(s *config.State, cmd Command) error {
 		return fmt.Errorf("error adding feed to database: %v", err)
 	}
 
-	dbFeed, err := s.Db.GetFeed(context.Background(), cmd.Args[0])
-	if err != nil {
-		return fmt.Errorf("failed to fetch feed from db: %v", err)
+	// dbFeed, err := s.Db.GetFeed(context.Background(), cmd.Args[0])
+	// if err != nil {
+	//	return fmt.Errorf("failed to fetch feed from db: %v", err)
+	//}
+
+	// newFollowArgs := database.CreateFeedFollowParams{
+	//	ID:        uuid.New(),
+	//	CreatedAt: time.Now(),
+	//	UpdatedAt: time.Now(),
+	//	UserID:    feed.UserID,
+	//	FeedID:    feed.ID,
+	//}
+
+	followCmd := Command{
+		Name: "follow",
+		Args: cmd.Args[1:],
 	}
-	fmt.Print(dbFeed)
+	err = HandlerFollowFeed(s, followCmd)
+	// folFeed, err := s.Db.CreateFeedFollow(context.Background(), newFollowArgs)
+	if err != nil {
+		return fmt.Errorf("failed to follow new feed: %v", err)
+	}
 
 	return nil
 }
@@ -107,7 +124,7 @@ func HandlerFollowFeed(s *config.State, cmd Command) error {
 		return fmt.Errorf("error querrying sql database: %v", err)
 	}
 
-	fmt.Printf("'%s' followed by %s", newFeedFollow.FeedName, newFeedFollow.UserName)
+	fmt.Printf("User: %s\nFollowing: %s\n", newFeedFollow.UserName, newFeedFollow.FeedName)
 	return nil
 }
 
