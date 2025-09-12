@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"os"
@@ -17,11 +18,11 @@ var cmdsList = map[string]func(*config.State, commands.Command) error{
 	"reset":     commands.HandlerReset,
 	"users":     commands.HandlerGetUsers,
 	"agg":       commands.Agg,
-	"addfeed":   commands.HandlerAddFeed,
+	"addfeed":   middlewareLoggedIn(commands.HandlerAddFeed),
 	"resetfeed": commands.HandlerResetFeeds,
 	"feeds":     commands.HandlerGetFeeds,
-	"follow":    commands.HandlerFollowFeed,
-	"following": commands.HandlerUserFollowing,
+	"follow":    middlewareLoggedIn(commands.HandlerFollowFeed),
+	"following": middlewareLoggedIn(commands.HandlerUserFollowing),
 }
 
 func genCmds() (cmds commands.Commands) {
@@ -84,5 +85,15 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
+	}
+}
+
+func middlewareLoggedIn(handler func(s *config.State, cmd commands.Command, user database.User) error) func(*config.State, commands.Command) error {
+	return func(s *config.State, cmd commands.Command) error {
+		user, err := s.Db.GetUser(context.Background(), s.Cfg.CurrentUserName)
+		if err != nil {
+			return err
+		}
+		return handler(s, cmd, user)
 	}
 }
