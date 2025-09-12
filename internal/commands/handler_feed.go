@@ -10,15 +10,10 @@ import (
 	"github.com/google/uuid"
 )
 
-func HandlerAddFeed(s *config.State, cmd Command) error {
+func HandlerAddFeed(s *config.State, cmd Command, user database.User) error {
 	args := cmd.Args
 	if len(args) < 2 {
 		return fmt.Errorf("2 arguments needed, name of feed and url: %v", args)
-	}
-
-	userId, err := getUserId(s)
-	if err != nil {
-		return err
 	}
 
 	feed := database.AddFeedParams{
@@ -27,35 +22,21 @@ func HandlerAddFeed(s *config.State, cmd Command) error {
 		UpdatedAt: time.Now(),
 		Name:      cmd.Args[0],
 		Url:       cmd.Args[1],
-		UserID:    userId,
+		UserID:    user.ID,
 	}
 
-	err = s.Db.AddFeed(context.Background(), feed)
+	err := s.Db.AddFeed(context.Background(), feed)
 	if err != nil {
 		return fmt.Errorf("error adding feed to database: %v", err)
 	}
-
-	// dbFeed, err := s.Db.GetFeed(context.Background(), cmd.Args[0])
-	// if err != nil {
-	//	return fmt.Errorf("failed to fetch feed from db: %v", err)
-	//}
-
-	// newFollowArgs := database.CreateFeedFollowParams{
-	//	ID:        uuid.New(),
-	//	CreatedAt: time.Now(),
-	//	UpdatedAt: time.Now(),
-	//	UserID:    feed.UserID,
-	//	FeedID:    feed.ID,
-	//}
 
 	followCmd := Command{
 		Name: "follow",
 		Args: cmd.Args[1:],
 	}
-	err = HandlerFollowFeed(s, followCmd)
-	// folFeed, err := s.Db.CreateFeedFollow(context.Background(), newFollowArgs)
+	err = HandlerFollowFeed(s, followCmd, user)
 	if err != nil {
-		return fmt.Errorf("failed to follow new feed: %v", err)
+		return err
 	}
 
 	return nil
@@ -94,7 +75,7 @@ func HandlerGetFeeds(s *config.State, cmd Command) error {
 	return nil
 }
 
-func HandlerFollowFeed(s *config.State, cmd Command) error {
+func HandlerFollowFeed(s *config.State, cmd Command, user database.User) error {
 	if len(cmd.Args) != 1 {
 		return fmt.Errorf("only 1 arguments needed, url: %v", cmd.Args)
 	}
@@ -106,16 +87,11 @@ func HandlerFollowFeed(s *config.State, cmd Command) error {
 		return fmt.Errorf("failed to fetch feed through url: %v", err)
 	}
 
-	userID, err := getUserId(s)
-	if err != nil {
-		return fmt.Errorf("failed to fetch user ID: %v", err)
-	}
-
 	newFollowArgs := database.CreateFeedFollowParams{
 		ID:        uuid.New(),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
-		UserID:    userID,
+		UserID:    user.ID,
 		FeedID:    feed.ID,
 	}
 
@@ -128,15 +104,15 @@ func HandlerFollowFeed(s *config.State, cmd Command) error {
 	return nil
 }
 
-func HandlerUserFollowing(s *config.State, cmd Command) error {
-	feedFollows, err := s.Db.GetFeedFollowsForUser(context.Background(), s.Cfg.CurrentUserName)
+func HandlerUserFollowing(s *config.State, cmd Command, user database.User) error {
+	feedFollows, err := s.Db.GetFeedFollowsForUser(context.Background(), user.Name)
 	if err != nil {
 		return fmt.Errorf("error fetching user feeds: %v", err)
 	}
 
 	// Check number of feeds and adjust print accordingly
 	numFeeds := len(feedFollows)
-	printUsrF := fmt.Sprintf("User %s is following %v feed", s.Cfg.CurrentUserName, numFeeds)
+	printUsrF := fmt.Sprintf("User %s is following %v feed", user.Name, numFeeds)
 	if numFeeds == 0 {
 		fmt.Printf("%ss.\n", printUsrF)
 		return nil
