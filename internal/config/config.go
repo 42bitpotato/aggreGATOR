@@ -3,6 +3,7 @@ package config
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 
@@ -15,8 +16,9 @@ type Config struct {
 }
 
 type State struct {
-	Db  *database.Queries
-	Cfg *Config
+	Db     *database.Queries
+	Cfg    *Config
+	Logger *log.Logger
 }
 
 const configFileName = ".gatorconfig.json"

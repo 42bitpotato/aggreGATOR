@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/42bitpotato/aggreGATOR/internal/commands"
@@ -51,8 +52,19 @@ func getInput() (commands.Command, error) {
 }
 
 func main() {
-	// Load the config file
 	var state config.State
+
+	// open or create log file
+	logFile, err := os.OpenFile("gatorLog.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatal(err) // fallback to stderr if file can't open
+	}
+	defer logFile.Close()
+
+	// new logger that writes to file
+	state.Logger = log.New(logFile, "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
+
+	// Load the config file
 	cfg, err := config.Read()
 	if err != nil {
 		fmt.Println("error reading config:", err)
