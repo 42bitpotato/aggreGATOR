@@ -65,3 +65,28 @@ func HandlerUserFollowing(s *config.State, cmd Command, user database.User) erro
 
 	return nil
 }
+
+func HandlerUnfollowFeed(s *config.State, cmd Command, user database.User) error {
+	if len(cmd.Args) != 1 {
+		return fmt.Errorf("only 1 arguments needed, url: %v", cmd.Args)
+	}
+	url := cmd.Args[0]
+
+	feed, err := s.Db.GetFeedByUrl(context.Background(), url)
+	if err != nil {
+		return fmt.Errorf("error fetching feed from url: %v", err)
+	}
+
+	args := database.RemoveFeedFollowParams{
+		UserID: user.ID,
+		FeedID: feed.ID,
+	}
+
+	err = s.Db.RemoveFeedFollow(context.Background(), args)
+	if err != nil {
+		return fmt.Errorf("error removing follow from db: %v", err)
+	}
+
+	fmt.Printf("Feed follow removed:\nUser: %s\nFeed: %s\n", user.Name, feed.Name)
+	return nil
+}

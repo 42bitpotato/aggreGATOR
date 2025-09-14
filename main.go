@@ -23,6 +23,7 @@ var cmdsList = map[string]func(*config.State, commands.Command) error{
 	"feeds":     commands.HandlerGetFeeds,
 	"follow":    middlewareLoggedIn(commands.HandlerFollowFeed),
 	"following": middlewareLoggedIn(commands.HandlerUserFollowing),
+	"unfollow":  middlewareLoggedIn(commands.HandlerUnfollowFeed),
 }
 
 func genCmds() (cmds commands.Commands) {
