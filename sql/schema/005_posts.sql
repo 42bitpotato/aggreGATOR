@@ -8,7 +8,7 @@ CREATE TABLE posts (
     title TEXT NOT NULL,
     url TEXT UNIQUE NOT NULL,
     description TEXT NOT NULL,
-    published_at TEXT NOT NULL,
+    published_at TIMESTAMP NULL,
     published_raw TEXT NOT NULL,
     feed_id UUID NOT NULL,
 
