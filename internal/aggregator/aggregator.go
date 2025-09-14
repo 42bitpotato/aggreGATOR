@@ -8,7 +8,7 @@ import (
 	"github.com/42bitpotato/aggreGATOR/internal/rss"
 )
 
-func scrapeFeeds(s *config.State) error {
+func ScrapeFeeds(s *config.State) error {
 	nextFeed, err := s.Db.GetNextFeedToFetch(context.Background())
 	if err != nil {
 		return fmt.Errorf("error fetching next feed: %v", err)

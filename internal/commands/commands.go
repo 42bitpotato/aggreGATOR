@@ -1,11 +1,11 @@
 package commands
 
 import (
-	"context"
 	"fmt"
+	"time"
 
+	"github.com/42bitpotato/aggreGATOR/internal/aggregator"
 	"github.com/42bitpotato/aggreGATOR/internal/config"
-	"github.com/42bitpotato/aggreGATOR/internal/rss"
 )
 
 type Command struct {
@@ -29,14 +29,21 @@ func (c *Commands) Register(name string, f func(*config.State, Command) error) {
 	c.RegisteredCommands[name] = f
 }
 
-// Aggregator command, will be automated later on
+// Aggregator - Feed fetching automation
 func Agg(s *config.State, cmd Command) error {
-	link := "https://www.wagslane.dev/index.xml"
-	rssCli := rss.NewClient()
-	feed, err := rssCli.FetchFeed(context.Background(), link)
-	if err != nil {
-		return fmt.Errorf("error fetching RSS feed: %v", err)
+	if len(cmd.Args) != 1 {
+		return fmt.Errorf("agg takes 1 argument, time duration (1s, 1m, 1h): %v", cmd.Args)
 	}
-	fmt.Print(feed)
-	return nil
+
+	timeBetweenReqs, err := time.ParseDuration(cmd.Args[0])
+	if err != nil {
+		return fmt.Errorf("invalid time argument: %v", err)
+	}
+
+	fmt.Printf("Collecting feeds every %v", timeBetweenReqs.Round(time.Second).String())
+
+	ticker := time.NewTicker(timeBetweenReqs)
+	for ; ; <-ticker.C {
+		aggregator.ScrapeFeeds(s)
+	}
 }
