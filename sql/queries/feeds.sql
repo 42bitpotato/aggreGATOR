@@ -59,3 +59,8 @@ WHERE users.name = $1;
 -- name: RemoveFeedFollow :exec
 DELETE FROM feed_follows
 WHERE user_id = $1 AND feed_id = $2;
+
+-- name: MarkFeedFetched :exec
+UPDATE feeds
+SET last_fetched_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP
+WHERE id = $1;
