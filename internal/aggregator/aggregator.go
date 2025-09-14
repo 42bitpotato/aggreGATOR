@@ -24,7 +24,7 @@ func ScrapeFeeds(s *config.State) error {
 		return fmt.Errorf("error fetching RSS feed: %v", err)
 	}
 
-	fmt.Printf("Fetched feed: %s\nItems:\n", feed.Channel.Title)
+	fmt.Printf("----------\nFETCHED FEED: %s\nITEMS:\n", feed.Channel.Title)
 	for _, item := range feed.Channel.Item {
 		fmt.Printf("*	%s\n", item.Title)
 	}

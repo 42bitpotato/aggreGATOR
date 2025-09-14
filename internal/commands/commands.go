@@ -40,7 +40,7 @@ func Agg(s *config.State, cmd Command) error {
 		return fmt.Errorf("invalid time argument: %v", err)
 	}
 
-	fmt.Printf("Collecting feeds every %v", timeBetweenReqs.Round(time.Second).String())
+	fmt.Printf("Collecting feeds every %v\n", timeBetweenReqs.Round(time.Second).String())
 
 	ticker := time.NewTicker(timeBetweenReqs)
 	for ; ; <-ticker.C {
