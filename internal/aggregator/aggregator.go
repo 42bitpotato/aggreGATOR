@@ -36,8 +36,7 @@ func ScrapeFeeds(s *config.State) error {
 func fetchFeed(url string) (feed *rss.RSSFeed, err error) {
 	rssCli := rss.NewClient()
 
-	var Feed *rss.RSSFeed
-	Feed, err = rssCli.FetchFeed(context.Background(), url)
+	Feed, err := rssCli.FetchFeed(context.Background(), url)
 	if err != nil {
 		return &rss.RSSFeed{}, err
 	}
