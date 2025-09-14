@@ -9,6 +9,7 @@ CREATE TABLE posts (
     url TEXT UNIQUE NOT NULL,
     description TEXT NOT NULL,
     published_at TEXT NOT NULL,
+    published_raw TEXT NOT NULL,
     feed_id UUID NOT NULL,
 
     CONSTRAINT fk_feed_id

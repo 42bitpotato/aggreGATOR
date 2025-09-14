@@ -13,7 +13,7 @@ import (
 )
 
 const createPost = `-- name: CreatePost :exec
-INSERT INTO posts (id, created_at, updated_at, title, url, description, published_at, feed_id)
+INSERT INTO posts (id, created_at, updated_at, title, url, description, published_at, published_raw, feed_id)
 VALUES (
     $1,
     $2,
@@ -22,19 +22,21 @@ VALUES (
     $5,
     $6,
     $7,
-    $8
+    $8,
+    $9
 )
 `
 
 type CreatePostParams struct {
-	ID          uuid.UUID
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	Title       string
-	Url         string
-	Description string
-	PublishedAt string
-	FeedID      uuid.UUID
+	ID           uuid.UUID
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
+	Title        string
+	Url          string
+	Description  string
+	PublishedAt  string
+	PublishedRaw string
+	FeedID       uuid.UUID
 }
 
 func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) error {
@@ -46,13 +48,14 @@ func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) error {
 		arg.Url,
 		arg.Description,
 		arg.PublishedAt,
+		arg.PublishedRaw,
 		arg.FeedID,
 	)
 	return err
 }
 
 const getPostsForUser = `-- name: GetPostsForUser :many
-SELECT id, created_at, updated_at, title, url, description, published_at, feed_id FROM posts
+SELECT id, created_at, updated_at, title, url, description, published_at, published_raw, feed_id FROM posts
 WHERE feed_id IN (
     SELECT feed_id
     FROM feed_follows
@@ -86,6 +89,7 @@ func (q *Queries) GetPostsForUser(ctx context.Context, arg GetPostsForUserParams
 			&i.Url,
 			&i.Description,
 			&i.PublishedAt,
+			&i.PublishedRaw,
 			&i.FeedID,
 		); err != nil {
 			return nil, err
