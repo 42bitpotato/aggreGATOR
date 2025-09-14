@@ -13,6 +13,7 @@ import (
 type Config struct {
 	DbUrl           string `json:"db_url"`
 	CurrentUserName string `json:"current_user_name"`
+	DateFormat      string `json:"date_format"`
 }
 
 type State struct {
@@ -72,6 +73,16 @@ func Read() (Config, error) {
 	if err := decoder.Decode(&cfg); err != nil {
 		return Config{}, fmt.Errorf("unable to decode config json: %v", err)
 	}
+
+	// Set date format
+	if cfg.DateFormat == "" {
+		cfg.DateFormat = "2006-01-02 15:04:05"
+		err = write(&cfg)
+		if err != nil {
+			return Config{}, fmt.Errorf("error writing date to config json: %v", err)
+		}
+	}
+
 	return cfg, nil
 }
 
