@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/42bitpotato/aggreGATOR/internal/database"
+	"github.com/microcosm-cc/bluemonday"
 )
 
 type Config struct {
@@ -17,9 +18,10 @@ type Config struct {
 }
 
 type State struct {
-	Db     *database.Queries
-	Cfg    *Config
-	Logger *log.Logger
+	Db         *database.Queries
+	Cfg        *Config
+	Logger     *log.Logger
+	HTMLpolicy *bluemonday.Policy
 }
 
 const configFileName = ".gatorconfig.json"
