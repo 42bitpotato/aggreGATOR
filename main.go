@@ -11,6 +11,7 @@ import (
 	"github.com/42bitpotato/aggreGATOR/internal/config"
 	"github.com/42bitpotato/aggreGATOR/internal/database"
 	_ "github.com/lib/pq"
+	"github.com/microcosm-cc/bluemonday"
 )
 
 var cmdsList = map[string]func(*config.State, commands.Command) error{
@@ -25,6 +26,7 @@ var cmdsList = map[string]func(*config.State, commands.Command) error{
 	"follow":    middlewareLoggedIn(commands.HandlerFollowFeed),
 	"following": middlewareLoggedIn(commands.HandlerUserFollowing),
 	"unfollow":  middlewareLoggedIn(commands.HandlerUnfollowFeed),
+	"browse":    middlewareLoggedIn(commands.HandlerBrowse),
 }
 
 func genCmds() (cmds commands.Commands) {
@@ -53,6 +55,7 @@ func getInput() (commands.Command, error) {
 
 func main() {
 	var state config.State
+	state.HTMLpolicy = bluemonday.StrictPolicy() // Set HTML strip tags policy
 
 	// open or create log file
 	logFile, err := os.OpenFile("gatorLog.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
