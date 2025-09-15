@@ -27,7 +27,7 @@ func ScrapeFeeds(s *config.State) error {
 		return fmt.Errorf("error marking feed with timestamp: %v", err)
 	}
 
-	feed, err := fetchFeed(nextFeed.Url)
+	feed, err := fetchFeed(s, nextFeed.Url)
 	if err != nil {
 		return fmt.Errorf("error fetching RSS feed: %v", err)
 	}
@@ -68,6 +68,7 @@ func ScrapeFeeds(s *config.State) error {
 			}
 			break
 		}
+		fmt.Printf("---CREATED---\nFeed: %s\nPost: %s\nTime: %s\n\n", nextFeed.Name, post.Title, time.Now().Format(s.Cfg.DateFormat))
 	}
 
 	//fmt.Printf("----------\nFETCHED FEED: %s\nITEMS:\n", feed.Channel.Title)
@@ -79,10 +80,10 @@ func ScrapeFeeds(s *config.State) error {
 	return nil
 }
 
-func fetchFeed(url string) (feed *rss.RSSFeed, err error) {
+func fetchFeed(s *config.State, url string) (feed *rss.RSSFeed, err error) {
 	rssCli := rss.NewClient()
 
-	Feed, err := rssCli.FetchFeed(context.Background(), url)
+	Feed, err := rssCli.FetchFeed(s, context.Background(), url)
 	if err != nil {
 		return &rss.RSSFeed{}, err
 	}
@@ -95,8 +96,8 @@ func handleCreatePostErr(in error) (retry bool, out error) {
 		return false, nil
 	}
 	var pqErr *pq.Error
-	code := string(pqErr.Code)
 	if errors.As(in, &pqErr) {
+		code := string(pqErr.Code)
 		if code == "23505" && pqErr.Constraint == "posts_url_key" {
 			return false, nil
 		} else if strings.HasPrefix(code, "08") {
