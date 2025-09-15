@@ -3,7 +3,6 @@ package rss
 import (
 	"context"
 	"encoding/xml"
-	"fmt"
 	"html"
 	"io"
 	"net/http"
@@ -97,7 +96,7 @@ func unescapeHTML(s *config.State, feed *RSSFeed) error {
 			}
 			newDesc += line
 			if j < len(splitDesc)-1 {
-				newDesc += fmt.Sprint("\n")
+				newDesc += "\n"
 			}
 		}
 
